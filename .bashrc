@@ -8,9 +8,9 @@
 declare -a WARNINGS
 ENABLE_BLESH=
 : "${XDG_CONFIG_HOME:=$HOME/.config}"
-if test -f $XDG_CONFIG_HOME/blesh/ble.sh; then
+if test -f $HOME/.local/share/blesh/ble.sh; then
     ENABLE_BLESH=1
-    . $XDG_CONFIG_HOME/blesh/ble.sh --noattach
+    . $HOME/.local/share/blesh/ble.sh --noattach
 else
     WARNINGS+="Ble.sh not found"
 fi
@@ -42,13 +42,14 @@ if test -f /usr/share/doc/pkgfile/command-not-found.bash; then
     #WARNINGS+="Pkgfile not installed, nonexistent invoked packages won't be suggested"
 fi
 
-if [[ $ENABLE_BLESH == 1 ]]; then
-    [[ ! ${BLE_VERSION-} ]] || ble-attach
-fi
-
+clear
 which neofetch >& /dev/null
 [[ $? == 0 ]] && neofetch
 
 echo $RED
 echo $WARNINGS
 echo $RESET
+
+if [[ $ENABLE_BLESH == 1 ]]; then
+    [[ ! ${BLE_VERSION-} ]] || ble-attach
+fi
