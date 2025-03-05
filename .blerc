@@ -1,0 +1,4 @@
+ble/path#remove-glob PATH '/mnt/*'
+bleopt line_limit_type=editor
+bleopt line_limit_length=120
+bleopt history_limit_length=120
