@@ -1,3 +1,6 @@
+ble-import -d integration/fzf-completion
+ble-import -d integration/fzf-key-bindings
+ble-import -d integration/fzf-menu
 ble/path#remove-glob PATH '/mnt/*'
 bleopt line_limit_type=editor
 bleopt line_limit_length=120
