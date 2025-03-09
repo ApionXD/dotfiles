@@ -41,6 +41,7 @@ require("lazy").setup({
 
 require("mason").setup()
 require("mason-lspconfig").setup()
+vim.g.coq_settings = { auto_start = 'shut-up' }
 local lspconfig = require("lspconfig")
 local coq = require("coq")
 lspconfig.kotlin_language_server.setup(coq.lsp_ensure_capabilities())
