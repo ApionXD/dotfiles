@@ -3,53 +3,72 @@
 #
 
 # If not running interactively, don't do anything
-[[ $- != *i* ]] && return
+main() {
+    [[ $- != *i* ]] && return
+    export PATH=$PATH:$HOME/.local/bin
 
-declare -a WARNINGS
-ENABLE_BLESH=
-: "${XDG_CONFIG_HOME:=$HOME/.config}"
-if test -f $HOME/.local/share/blesh/ble.sh; then
-    ENABLE_BLESH=1
-    . $HOME/.local/share/blesh/ble.sh --noattach
-else
-    WARNINGS+="Ble.sh not found"
-fi
+    declare -a WARNINGS
+    ENABLE_BLESH=
+    # Set config dir if it isn't already set
+    : "${XDG_CONFIG_HOME:=$HOME/.config}"
+    # Check for blesh and start initting
+    if test -f $HOME/.local/share/blesh/ble.sh; then
+        ENABLE_BLESH=1
+        . $HOME/.local/share/blesh/ble.sh --noattach
+    else
+        WARNINGS+=("Ble.sh not found")
+    fi
 
-# Add aliases
-[[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
+    # Add aliases
+    [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
 
-[[ -f $XDG_CONFIG_HOME/.bashrc_local ]] && . $XDG_CONFIG_HOME/.bashrc_local
-# Set prompt
-BLUE="$(tput setaf 39)"
-RED="$(tput setaf 160)"
-RESET="$(tput sgr0)"
-PS1='[${BLUE}\u@\h ${RED}\w${RESET}]\$ '
+    [[ -f $XDG_CONFIG_HOME/.bashrc_local ]] && . $XDG_CONFIG_HOME/.bashrc_local
+    # Set prompt
+    BLUE="$(tput setaf 39)"
+    RED="$(tput setaf 160)"
+    RESET="$(tput sgr0)"
+    PS1='[${BLUE}\u@\h ${RED}\w${RESET}]\$ '
 
-EDITOR=vim
-set -o vi
+    EDITOR=vim
+    set -o vi
 
-# Use bash-completion, if available
-if test -f /usr/share/bash-completion/bash_completion; then
-    . /usr/share/bash-completion/bash_completion
-#else
-    #WARNINGS+="Bash completion not installed"
-fi
+    # Use bash-completion, if available
+    if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+        . /usr/share/bash-completion/bash_completion
+    else
+        WARNINGS+=("Bash completion not installed")
+    fi
 
-# Enable suggesting of packages when entering commands not on system
-if test -f /usr/share/doc/pkgfile/command-not-found.bash; then
-    . /usr/share/doc/pkgfile/command-not-found.bash
-#else
-    #WARNINGS+="Pkgfile not installed, nonexistent invoked packages won't be suggested"
-fi
+    # Enable suggesting of packages when entering commands not on system
+    if [[ -f /usr/share/doc/pkgfile/command-not-found.bash ]]; then
+        . /usr/share/doc/pkgfile/command-not-found.bash
+    else
+        WARNINGS+=("Pkgfile not installed, nonexistent invoked packages won't be suggested")
+    fi
 
-clear
-which neofetch >& /dev/null
-[[ $? == 0 ]] && neofetch
+    clear
 
-echo $RED
-echo $WARNINGS
-echo $RESET
+    check_command_installed "neofetch" "Neofetch not installed :("
+    [[ $? ]] && neofetch
+    check_command_installed "python3" "Python 3 not found, its likely neovim will not work properly"
+    check_command_installed "nvim" "Neovim not installed"
 
-if [[ $ENABLE_BLESH == 1 ]]; then
-    [[ ! ${BLE_VERSION-} ]] || ble-attach
-fi
+    echo $RED
+    printf "%s\n" "${WARNINGS[@]}"
+    echo $RESET
+
+    if [[ $ENABLE_BLESH == 1 ]]; then
+        [[ ! ${BLE_VERSION-} ]] || ble-attach
+    fi
+}
+#Checks if a command is on the path, adds error if not
+check_command_installed() {
+    local command=$1
+    command -v $command >& /dev/null
+
+    if [[ $? != 0 ]]; then
+        WARNINGS+=($2)
+    fi
+}
+
+main
