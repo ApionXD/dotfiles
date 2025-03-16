@@ -67,7 +67,7 @@ check_command_installed() {
     command -v $command >& /dev/null
 
     if [[ $? != 0 ]]; then
-        WARNINGS+=($2)
+        WARNINGS+=("$2")
     fi
 }
 
