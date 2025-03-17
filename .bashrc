@@ -52,10 +52,12 @@ main() {
     clear
 
     check_command_installed "neofetch" "Neofetch not installed :("
-    [[ $? ]] && neofetch
+    [[ $? == 0 ]] && neofetch
     check_command_installed "python3" "Python 3 not found, its likely neovim will not work properly"
     check_command_installed "nvim" "Neovim not installed"
     check_command_installed "fzf" "fzf not installed"
+    check_command_installed "rg" "Ripgrep not installed"
+    check_command_installed "lazygit" "Lazygit not installed"
 
     echo $RED
     printf "%s\n" "${WARNINGS[@]}"
