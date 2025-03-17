@@ -12,9 +12,12 @@ main() {
     # Set config dir if it isn't already set
     : "${XDG_CONFIG_HOME:=$HOME/.config}"
     # Check for blesh and start initting
-    if test -f $HOME/.local/share/blesh/ble.sh; then
+    if [ -f $HOME/.local/share/blesh/ble.sh ]; then
         ENABLE_BLESH=1
         . $HOME/.local/share/blesh/ble.sh --noattach
+    elif [ -f /usr/share/blesh/ble.sh ]; then
+        ENABLE_BLESH=1
+        . /usr/share/blesh/ble.sh --noattach
     else
         WARNINGS+=("Ble.sh not found")
     fi
@@ -52,6 +55,7 @@ main() {
     [[ $? ]] && neofetch
     check_command_installed "python3" "Python 3 not found, its likely neovim will not work properly"
     check_command_installed "nvim" "Neovim not installed"
+    check_command_installed "fzf" "fzf not installed"
 
     echo $RED
     printf "%s\n" "${WARNINGS[@]}"
